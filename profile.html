@@ -1,11 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <title>個人資料</title>
 </head>
 <body>
-  <h1>這是個人資料頁</h1>
+
+<h1>個人資料</h1>
+
+<p>請建立帳號與暱稱</p>
+
+<label>帳號（英數）</label><br>
+<input id="account"><br><br>
+
+<label>暱稱</label><br>
+<input id="nickname"><br><br>
+
+<button onclick="saveProfile()">確認</button>
+
+<script>
+function saveProfile() {
+  // 取得輸入框的內容
+  let account = document.getElementById("account").value;
+  let nickname = document.getElementById("nickname").value;
+
+  // 把資料存在瀏覽器裡
+  localStorage.setItem("account", account);
+  localStorage.setItem("nickname", nickname);
+
+  // 跳轉到紀錄頁
+  window.location.href = "record.html";
+}
+</script>
+
 </body>
 </html>
-
