@@ -5,22 +5,20 @@
   <title>紀錄頁</title>
 </head>
 <body>
-<hr>
-
-<h2>🏆 排行榜（前 10 名）</h2>
-
-<ol id="rankList">
-  <!-- 排行榜會顯示在這裡 -->
-</ol>
 
 <h1>紀錄頁</h1>
 
-<!-- 顯示暱稱 -->
 <p>你好，<span id="userName"></span> 👋</p>
 
 <hr>
 
-<!-- 個人紀錄區 -->
+<!-- 🏆 排行榜 -->
+<h2>🏆 排行榜（前 10 名）</h2>
+<ol id="rankList"></ol>
+
+<hr>
+
+<!-- 📝 個人紀錄區 -->
 <h2>個人紀錄區</h2>
 
 <label>時間</label><br>
@@ -39,7 +37,7 @@
 
 <hr>
 
-<!-- 和朋友一起玩 -->
+<!-- 👥 房間功能 -->
 <h2>和朋友一起玩</h2>
 
 <button onclick="createRoom()">創建房間</button>
@@ -49,36 +47,28 @@
 <button onclick="joinRoom()">加入房間</button>
 
 <script>
-/* ========= 顯示暱稱 ========= */
-let nickname = localStorage.getItem("nickname");
-
-if (!nickname) {
-  nickname = "訪客";
-}
-
+/* ========= 使用者 ========= */
+let nickname = localStorage.getItem("nickname") || "訪客";
 document.getElementById("userName").innerText = nickname;
 
-
-/* ========= 讀取已存紀錄 ========= */
+/* ========= 個人紀錄 ========= */
 let records = JSON.parse(localStorage.getItem("records")) || [];
 
-// 一進頁面就顯示
+/* ========= 排行榜 ========= */
+let scores = JSON.parse(localStorage.getItem("scores")) || {};
+
+/* ========= 頁面初始化 ========= */
 records.forEach(showRecord);
+updateRank();
 
-
-/* ========= 新增紀錄 ========= */
-function addRecord(// ===== 排行榜處理 =====
-if (!scores[nickname]) {
-  scores[nickname] = 0;
+let savedRoom = localStorage.getItem("roomCode");
+if (savedRoom) {
+  document.getElementById("roomText").innerText =
+    "目前所在房間：" + savedRoom;
 }
 
-scores[nickname]++;
-
-localStorage.setItem("scores", JSON.stringify(scores));
-
-updateRank();
-) {
-
+/* ========= 新增紀錄 ========= */
+function addRecord() {
   let time = document.getElementById("time").value;
   let feel = document.getElementById("feel").value;
   let note = document.getElementById("note").value || "無";
@@ -96,25 +86,49 @@ updateRank();
 
   records.push(record);
   localStorage.setItem("records", JSON.stringify(records));
-
   showRecord(record);
+
+  // 排行榜加分
+  if (!scores[nickname]) {
+    scores[nickname] = 0;
+  }
+  scores[nickname]++;
+  localStorage.setItem("scores", JSON.stringify(scores));
+  updateRank();
 
   alert("已新增紀錄！");
 }
 
-
 /* ========= 顯示單筆紀錄 ========= */
 function showRecord(record) {
-
   let li = document.createElement("li");
   li.innerText =
     "時間：" + record.time +
     "｜狀況：" + record.feel +
     "｜備註：" + record.note;
-
   document.getElementById("recordList").appendChild(li);
 }
 
+/* ========= 更新排行榜 ========= */
+function updateRank() {
+  let list = document.getElementById("rankList");
+  list.innerHTML = "";
+
+  let arr = [];
+  for (let name in scores) {
+    arr.push({ name: name, score: scores[name] });
+  }
+
+  arr.sort(function(a, b) {
+    return b.score - a.score;
+  });
+
+  arr.slice(0, 10).forEach(function(item) {
+    let li = document.createElement("li");
+    li.innerText = item.name + "：" + item.score + " 次";
+    list.appendChild(li);
+  });
+}
 
 /* ========= 房間功能 ========= */
 function makeRoomCode() {
@@ -126,71 +140,20 @@ function createRoom() {
   localStorage.setItem("roomCode", code);
   document.getElementById("roomText").innerText =
     "你的房間代碼是：" + code;
-
   alert("房間已建立！");
 }
 
 function joinRoom() {
   let code = document.getElementById("roomInput").value;
-
   if (code === "") {
     alert("請輸入房間代碼");
     return;
   }
-
   localStorage.setItem("roomCode", code);
   document.getElementById("roomText").innerText =
     "你已加入房間：" + code;
-
   alert("成功加入房間！");
 }
-
-// 重新整理仍顯示房間
-let savedRoom = localStorage.getItem("roomCode");
-if (savedRoom) {
-  document.getElementById("roomText").innerText =
-    "目前所在房間：" + savedRoom;
-}
- 
-/* ========= 排行榜資料 ========= */
-
-// 從 localStorage 讀取排行榜
-let scores = JSON.parse(localStorage.getItem("scores")) || {};
-
-// 使用者暱稱
-let rankName = nickname; // 你前面已經有 nickname 這個變數
-
-// 一進頁面先顯示排行榜
-updateRank();
-
-/* ========= 更新排行榜 ========= */
-function updateRank() {
-
-  let list = document.getElementById("rankList");
-  list.innerHTML = "";
-
-  let arr = [];
-
-  for (let name in scores) {
-    arr.push({
-      name: name,
-      score: scores[name]
-    });
-  }
-
-  // 依次數排序（多的在前）
-  arr.sort(function(a, b) {
-    return b.score - a.score;
-  });
-
-  // 只顯示前 10 名
-  arr.slice(0, 10).forEach(function(item) {
-    let li = document.createElement("li");
-    li.innerText = item.name + "：" + item.score + " 次";
-    list.appendChild(li);
-  });
-}
-
 </script>
 
 </body>
