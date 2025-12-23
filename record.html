@@ -32,6 +32,7 @@
     <input id="note">
 
     <button onclick="addRecord()">新增資料</button>
+<button onclick="clearRecords()">清除所有紀錄</button>
 
     <h3>我的紀錄</h3>
     <ul id="recordList"></ul>
@@ -179,7 +180,27 @@ function joinRoom() {
     "你已加入房間：" + code;
   alert("成功加入房間！");
 }
-</script>
+function clearRecords() {
+
+  // 再確認一次，避免誤按
+  if (!confirm("確定要清除所有紀錄嗎？這個動作無法復原")) {
+    return;
+  }
+
+  // 清除紀錄資料
+  records = [];
+  localStorage.removeItem("records");
+
+  // 清除排行榜資料
+  localStorage.removeItem("scores");
+
+  // 清空畫面上的清單
+  document.getElementById("recordList").innerHTML = "";
+  document.getElementById("rankList").innerHTML = "";
+
+  alert("所有紀錄已清除！");
+}
+
 
 </body>
 </html>
