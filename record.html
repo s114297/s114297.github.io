@@ -5,6 +5,13 @@
   <title>紀錄頁</title>
 </head>
 <body>
+<hr>
+
+<h2>🏆 排行榜（前 10 名）</h2>
+
+<ol id="rankList">
+  <!-- 排行榜會顯示在這裡 -->
+</ol>
 
 <h1>紀錄頁</h1>
 
@@ -60,7 +67,17 @@ records.forEach(showRecord);
 
 
 /* ========= 新增紀錄 ========= */
-function addRecord() {
+function addRecord(// ===== 排行榜處理 =====
+if (!scores[nickname]) {
+  scores[nickname] = 0;
+}
+
+scores[nickname]++;
+
+localStorage.setItem("scores", JSON.stringify(scores));
+
+updateRank();
+) {
 
   let time = document.getElementById("time").value;
   let feel = document.getElementById("feel").value;
@@ -134,6 +151,46 @@ if (savedRoom) {
   document.getElementById("roomText").innerText =
     "目前所在房間：" + savedRoom;
 }
+ 
+/* ========= 排行榜資料 ========= */
+
+// 從 localStorage 讀取排行榜
+let scores = JSON.parse(localStorage.getItem("scores")) || {};
+
+// 使用者暱稱
+let rankName = nickname; // 你前面已經有 nickname 這個變數
+
+// 一進頁面先顯示排行榜
+updateRank();
+
+/* ========= 更新排行榜 ========= */
+function updateRank() {
+
+  let list = document.getElementById("rankList");
+  list.innerHTML = "";
+
+  let arr = [];
+
+  for (let name in scores) {
+    arr.push({
+      name: name,
+      score: scores[name]
+    });
+  }
+
+  // 依次數排序（多的在前）
+  arr.sort(function(a, b) {
+    return b.score - a.score;
+  });
+
+  // 只顯示前 10 名
+  arr.slice(0, 10).forEach(function(item) {
+    let li = document.createElement("li");
+    li.innerText = item.name + "：" + item.score + " 次";
+    list.appendChild(li);
+  });
+}
+
 </script>
 
 </body>
