@@ -1,11 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <title>紀錄頁</title>
 </head>
 <body>
-  <h1>這是紀錄頁</h1>
+
+<h1>紀錄頁</h1>
+
+<!-- 顯示暱稱 -->
+<p>你好，<span id="userName"></span> 👋</p>
+
+<hr>
+
+<!-- 個人紀錄區 -->
+<h2>個人紀錄區</h2>
+
+<label>時間</label><br>
+<input type="datetime-local" id="time"><br><br>
+
+<label>如廁狀況（左：不舒服 → 右：舒服）</label><br>
+<input type="range" min="1" max="5" id="feel"><br><br>
+
+<label>備註（非必填）</label><br>
+<input id="note"><br><br>
+
+<button onclick="addRecord()">新增資料</button>
+
+<hr>
+
+<!-- 顯示紀錄的地方 -->
+<h2>我的紀錄</h2>
+<ul id="recordList"></ul>
+
+<script>
+/* 🔹 一進頁面就做的事 */
+
+// 從 localStorage 取出暱稱
+let nickname = localStorage.getItem("nickname");
+
+// 顯示在畫面上
+document.getElementById("userName").innerText = nickname;
+
+
+/* 🔹 新增紀錄的功能 */
+function addRecord() {
+
+  // 取得使用者輸入的資料
+  let time = document.getElementById("time").value;
+  let feel = document.getElementById("feel").value;
+  let note = document.getElementById("note").value;
+
+  // 組成一段文字
+  let text =
+    "時間：" + time +
+    "｜狀況：" + feel +
+    "｜備註：" + (note || "無");
+
+  // 新增到清單中
+  let li = document.createElement("li");
+  li.innerText = text;
+
+  document.getElementById("recordList").appendChild(li);
+}
+</script>
+
 </body>
 </html>
+
 
