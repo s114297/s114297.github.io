@@ -5,13 +5,6 @@
   <title>紀錄頁</title>
 </head>
 <body>
-<hr>
-
-<h2>🏆 排行榜（前 10 名）</h2>
-
-<ol id="rankList">
-  <!-- 排行榜會顯示在這裡 -->
-</ol>
 
 <h1>紀錄頁</h1>
 
@@ -26,7 +19,7 @@
 <label>時間</label><br>
 <input type="datetime-local" id="time"><br><br>
 
-<label>如廁狀況（左：不舒服 → 右：舒服）</label><br>
+<label>如廁狀況（左不舒服 → 右舒服）</label><br>
 <input type="range" min="1" max="5" id="feel"><br><br>
 
 <label>備註（非必填）</label><br>
@@ -34,27 +27,37 @@
 
 <button onclick="addRecord()">新增資料</button>
 
-<hr>
-
-<!-- 顯示紀錄的地方 -->
-<h2>我的紀錄</h2>
+<h3>我的紀錄</h3>
 <ul id="recordList"></ul>
 
+<hr>
 
- <script>
-/* ========= 使用者暱稱 ========= */
-let userName = localStorage.getItem("nickname");
-document.getElementById("userName").innerText = userName;
+<!-- 和朋友一起玩 -->
+<h2>和朋友一起玩</h2>
 
-/* ========= 個人紀錄資料 ========= */
+<button onclick="createRoom()">創建房間</button>
+<p id="roomText">尚未加入房間</p>
+
+<input id="roomInput" placeholder="輸入房間代碼">
+<button onclick="joinRoom()">加入房間</button>
+
+<script>
+/* ========= 顯示暱稱 ========= */
+let nickname = localStorage.getItem("nickname");
+
+if (!nickname) {
+  nickname = "訪客";
+}
+
+document.getElementById("userName").innerText = nickname;
+
+
+/* ========= 讀取已存紀錄 ========= */
 let records = JSON.parse(localStorage.getItem("records")) || [];
 
-/* ========= 排行榜資料 ========= */
-let scores = JSON.parse(localStorage.getItem("scores")) || {};
-
-/* ========= 頁面一進來就顯示 ========= */
+// 一進頁面就顯示
 records.forEach(showRecord);
-updateRank();
+
 
 /* ========= 新增紀錄 ========= */
 function addRecord() {
@@ -68,32 +71,24 @@ function addRecord() {
     return;
   }
 
-  // 建立一筆紀錄
   let record = {
     time: time,
     feel: feel,
     note: note
   };
 
-  // 存紀錄
   records.push(record);
   localStorage.setItem("records", JSON.stringify(records));
 
-  // 顯示紀錄
   showRecord(record);
 
-  // ===== 排行榜處理 =====
-  if (!scores[userName]) {
-    scores[userName] = 0;
-  }
-
-  scores[userName]++;
-  localStorage.setItem("scores", JSON.stringify(scores));
-  updateRank();
+  alert("已新增紀錄！");
 }
+
 
 /* ========= 顯示單筆紀錄 ========= */
 function showRecord(record) {
+
   let li = document.createElement("li");
   li.innerText =
     "時間：" + record.time +
@@ -103,46 +98,43 @@ function showRecord(record) {
   document.getElementById("recordList").appendChild(li);
 }
 
-/* ========= 更新排行榜 ========= */
-function updateRank() {
-  let list = document.getElementById("rankList");
-  list.innerHTML = "";
 
-  let arr = [];
+/* ========= 房間功能 ========= */
+function makeRoomCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
 
-  for (let name in scores) {
-    arr.push({
-      name: name,
-      score: scores[name]
-    });
+function createRoom() {
+  let code = makeRoomCode();
+  localStorage.setItem("roomCode", code);
+  document.getElementById("roomText").innerText =
+    "你的房間代碼是：" + code;
+
+  alert("房間已建立！");
+}
+
+function joinRoom() {
+  let code = document.getElementById("roomInput").value;
+
+  if (code === "") {
+    alert("請輸入房間代碼");
+    return;
   }
 
-  arr.sort(function(a, b) {
-    return b.score - a.score;
-  });
+  localStorage.setItem("roomCode", code);
+  document.getElementById("roomText").innerText =
+    "你已加入房間：" + code;
 
-  arr.slice(0, 10).forEach(function(item) {
-    let li = document.createElement("li");
-    li.innerText = item.name + "：" + item.score + " 次";
-    list.appendChild(li);
-  });
+  alert("成功加入房間！");
+}
+
+// 重新整理仍顯示房間
+let savedRoom = localStorage.getItem("roomCode");
+if (savedRoom) {
+  document.getElementById("roomText").innerText =
+    "目前所在房間：" + savedRoom;
 }
 </script>
 
-<hr>
-
-<h2>和朋友一起玩</h2>
-
-<button onclick="createRoom()">創建房間</button>
-
-<p id="roomText">目前尚未加入房間</p>
-
-<input id="roomInput" placeholder="輸入房間代碼">
-
-<button onclick="joinRoom()">加入房間</button>
-
-
 </body>
 </html>
-
-
