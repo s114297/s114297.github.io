@@ -34,36 +34,56 @@
 <ul id="recordList"></ul>
 
 <script>
-/* 🔹 一進頁面就做的事 */
-
-// 從 localStorage 取出暱稱
+/* ========= 讀取暱稱 ========= */
 let nickname = localStorage.getItem("nickname");
-
-// 顯示在畫面上
 document.getElementById("userName").innerText = nickname;
 
 
-/* 🔹 新增紀錄的功能 */
+/* ========= 讀取已存的紀錄 ========= */
+let records = JSON.parse(localStorage.getItem("records")) || [];
+
+// 一進頁面就顯示所有紀錄
+records.forEach(showRecord);
+
+
+/* ========= 新增紀錄 ========= */
 function addRecord() {
 
-  // 取得使用者輸入的資料
   let time = document.getElementById("time").value;
   let feel = document.getElementById("feel").value;
   let note = document.getElementById("note").value;
 
-  // 組成一段文字
-  let text =
-    "時間：" + time +
-    "｜狀況：" + feel +
-    "｜備註：" + (note || "無");
+  // 把一筆資料變成一個物件
+  let record = {
+    time: time,
+    feel: feel,
+    note: note || "無"
+  };
 
-  // 新增到清單中
+  // 加進陣列
+  records.push(record);
+
+  // 存進 localStorage
+  localStorage.setItem("records", JSON.stringify(records));
+
+  // 顯示在畫面
+  showRecord(record);
+}
+
+
+/* ========= 顯示單筆紀錄 ========= */
+function showRecord(record) {
+
   let li = document.createElement("li");
-  li.innerText = text;
+  li.innerText =
+    "時間：" + record.time +
+    "｜狀況：" + record.feel +
+    "｜備註：" + record.note;
 
   document.getElementById("recordList").appendChild(li);
 }
 </script>
+
 
 </body>
 </html>
