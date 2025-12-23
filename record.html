@@ -14,7 +14,7 @@
 
   <!-- 排行榜 -->
   <div class="section">
-    <h2>🏆 排行榜（前 10 名）</h2>
+    <h2>🏆 排行榜</h2>
     <ol id="rankList"></ol>
   </div>
 
@@ -23,16 +23,16 @@
     <h2>個人紀錄區</h2>
 
     <label>時間</label>
-    <input type="datetime-local" id="time">
+    <input type="datetime-local" id="time" max="">
 
     <label>如廁狀況（左不舒服 → 右舒服）</label>
-    <input type="range" min="1" max="5" id="feel">
+    <input type="range" min="1" max="5" id="feel" value="3">
 
     <label>備註（非必填）</label>
     <input id="note">
 
-    <button onclick="addRecord()">新增資料</button>
-    <button onclick="clearRecords()">清除所有紀錄</button>
+    <button id="addBtn">新增資料</button>
+    <button id="clearBtn">清除所有紀錄</button>
 
     <h3>我的紀錄</h3>
     <ul id="recordList"></ul>
@@ -42,11 +42,11 @@
   <div class="section">
     <h2>和朋友一起玩</h2>
 
-    <button onclick="createRoom()">創建房間</button>
+    <button id="createRoomBtn">創建房間</button>
     <p id="roomText">尚未加入房間</p>
 
     <input id="roomInput" placeholder="輸入房間代碼">
-    <button onclick="joinRoom()">加入房間</button>
+    <button id="joinRoomBtn">加入房間</button>
   </div>
 
   <!-- 常見問題 -->
@@ -70,128 +70,102 @@
 
 <script>
 /* ===== 使用者 ===== */
-let nickname = localStorage.getItem("nickname") || "訪客";
+const nickname = localStorage.getItem("nickname") || "訪客";
 document.getElementById("userName").innerText = nickname;
 
-/* ===== 紀錄資料 ===== */
+/* ===== 限制時間不能超過現在 ===== */
+const now = new Date();
+const localNow = new Date(
+  now.getTime() - now.getTimezoneOffset() * 60000
+).toISOString().slice(0, 16);
+document.getElementById("time").max = localNow;
+
+/* ===== 資料 ===== */
 let records = JSON.parse(localStorage.getItem("records")) || [];
 
-/* ===== 排行榜資料（即時計算，不存死） ===== */
-let scores = {};
+/* ===== DOM ===== */
+const recordList = document.getElementById("recordList");
+const rankList = document.getElementById("rankList");
 
-/* ===== 初始化畫面 ===== */
-records.forEach(showRecord);
-recalculateScores();
-updateRank();
+/* ===== 顯示紀錄 ===== */
+function renderRecords() {
+  recordList.innerHTML = "";
+  records.forEach(r => {
+    const li = document.createElement("li");
+    li.textContent =
+      `時間：${r.time}｜狀況：${r.feel}｜備註：${r.note}`;
+    recordList.appendChild(li);
+  });
+}
 
-/* ===== 房間顯示 ===== */
-let savedRoom = localStorage.getItem("roomCode");
-if (savedRoom) {
-  document.getElementById("roomText").innerText =
-    "目前所在房間：" + savedRoom;
+/* ===== 排行榜（依紀錄數） ===== */
+function renderRank() {
+  rankList.innerHTML = "";
+  const li = document.createElement("li");
+  li.textContent = `${nickname}：${records.length} 次`;
+  rankList.appendChild(li);
 }
 
 /* ===== 新增紀錄 ===== */
-function addRecord() {
-  let time = document.getElementById("time").value;
-  let feel = document.getElementById("feel").value;
-  let note = document.getElementById("note").value || "無";
+document.getElementById("addBtn").addEventListener("click", () => {
+  const time = document.getElementById("time").value;
+  const feel = document.getElementById("feel").value;
+  const note = document.getElementById("note").value || "無";
 
-  if (time === "") {
+  if (!time) {
     alert("請選擇時間");
     return;
   }
 
-  let record = { time, feel, note };
-  records.push(record);
-
+  records.push({ time, feel, note });
   localStorage.setItem("records", JSON.stringify(records));
 
-  showRecord(record);
+  renderRecords();
+  renderRank();
 
-  recalculateScores();
-  updateRank();
+  // 新增後回復預設狀態
+  document.getElementById("time").value = "";
+  document.getElementById("feel").value = 3;
+  document.getElementById("note").value = "";
+});
 
-  alert("已新增紀錄！");
-}
-
-/* ===== 顯示單筆 ===== */
-function showRecord(record) {
-  let li = document.createElement("li");
-  li.innerText =
-    "時間：" + record.time +
-    "｜狀況：" + record.feel +
-    "｜備註：" + record.note;
-  document.getElementById("recordList").appendChild(li);
-}
-
-/* ===== 重新計算排行榜（最穩） ===== */
-function recalculateScores() {
-  scores = {};
-  records.forEach(function () {
-    if (!scores[nickname]) {
-      scores[nickname] = 0;
-    }
-    scores[nickname]++;
-  });
-}
-
-/* ===== 更新排行榜 ===== */
-function updateRank() {
-  let list = document.getElementById("rankList");
-  list.innerHTML = "";
-
-  let arr = [];
-  for (let name in scores) {
-    arr.push({ name, score: scores[name] });
-  }
-
-  arr.sort((a, b) => b.score - a.score);
-
-  arr.slice(0, 10).forEach(item => {
-    let li = document.createElement("li");
-    li.innerText = item.name + "：" + item.score + " 次";
-    list.appendChild(li);
-  });
-}
-
-/* ===== 清除紀錄（已修好） ===== */
-function clearRecords() {
+/* ===== 清除紀錄 ===== */
+document.getElementById("clearBtn").addEventListener("click", () => {
   if (!confirm("確定要清除所有紀錄嗎？")) return;
 
   records = [];
   localStorage.removeItem("records");
 
-  document.getElementById("recordList").innerHTML = "";
-
-  recalculateScores();
-  updateRank();
-
-  alert("紀錄已清除！");
-}
+  renderRecords();
+  renderRank();
+});
 
 /* ===== 房間功能 ===== */
 function makeRoomCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-function createRoom() {
-  let code = makeRoomCode();
+document.getElementById("createRoomBtn").addEventListener("click", () => {
+  const code = makeRoomCode();
   localStorage.setItem("roomCode", code);
-  document.getElementById("roomText").innerText =
+  document.getElementById("roomText").textContent =
     "你的房間代碼是：" + code;
-}
+});
 
-function joinRoom() {
-  let code = document.getElementById("roomInput").value;
-  if (code === "") {
+document.getElementById("joinRoomBtn").addEventListener("click", () => {
+  const code = document.getElementById("roomInput").value;
+  if (!code) {
     alert("請輸入房間代碼");
     return;
   }
   localStorage.setItem("roomCode", code);
-  document.getElementById("roomText").innerText =
+  document.getElementById("roomText").textContent =
     "你已加入房間：" + code;
-}
+});
+
+/* ===== 初始化 ===== */
+renderRecords();
+renderRank();
 </script>
 
 </body>
