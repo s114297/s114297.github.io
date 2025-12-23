@@ -12,13 +12,13 @@
 
 <div class="main-grid">
 
-  <!-- 🏆 排行榜 -->
+  <!-- 排行榜 -->
   <div class="section">
     <h2>🏆 排行榜（前 10 名）</h2>
     <ol id="rankList"></ol>
   </div>
 
-  <!-- 📝 個人紀錄 -->
+  <!-- 個人紀錄 -->
   <div class="section">
     <h2>個人紀錄區</h2>
 
@@ -32,13 +32,13 @@
     <input id="note">
 
     <button onclick="addRecord()">新增資料</button>
-<button onclick="clearRecords()">清除所有紀錄</button>
+    <button onclick="clearRecords()">清除所有紀錄</button>
 
     <h3>我的紀錄</h3>
     <ul id="recordList"></ul>
   </div>
 
-  <!-- 👥 房間 -->
+  <!-- 房間 -->
   <div class="section">
     <h2>和朋友一起玩</h2>
 
@@ -49,7 +49,7 @@
     <button onclick="joinRoom()">加入房間</button>
   </div>
 
-  <!-- ❓ 常見問題 -->
+  <!-- 常見問題 -->
   <div class="section">
     <h2>常見問題</h2>
 
@@ -69,29 +69,29 @@
 </div>
 
 <script>
-/* ========= 使用者 ========= */
+/* ===== 使用者 ===== */
 let nickname = localStorage.getItem("nickname") || "訪客";
 document.getElementById("userName").innerText = nickname;
 
-/* ========= 個人紀錄 ========= */
+/* ===== 紀錄資料 ===== */
 let records = JSON.parse(localStorage.getItem("records")) || [];
 
-/* ========= 排行榜（以紀錄數量計算，最穩） ========= */
+/* ===== 排行榜資料（即時計算，不存死） ===== */
 let scores = {};
 
-/* ========= 房間 ========= */
+/* ===== 初始化畫面 ===== */
+records.forEach(showRecord);
+recalculateScores();
+updateRank();
+
+/* ===== 房間顯示 ===== */
 let savedRoom = localStorage.getItem("roomCode");
 if (savedRoom) {
   document.getElementById("roomText").innerText =
     "目前所在房間：" + savedRoom;
 }
 
-/* ========= 初始化畫面 ========= */
-records.forEach(showRecord);
-recalculateScores();
-updateRank();
-
-/* ========= 新增紀錄 ========= */
+/* ===== 新增紀錄 ===== */
 function addRecord() {
   let time = document.getElementById("time").value;
   let feel = document.getElementById("feel").value;
@@ -106,6 +106,7 @@ function addRecord() {
   records.push(record);
 
   localStorage.setItem("records", JSON.stringify(records));
+
   showRecord(record);
 
   recalculateScores();
@@ -114,7 +115,7 @@ function addRecord() {
   alert("已新增紀錄！");
 }
 
-/* ========= 顯示單筆紀錄 ========= */
+/* ===== 顯示單筆 ===== */
 function showRecord(record) {
   let li = document.createElement("li");
   li.innerText =
@@ -124,7 +125,7 @@ function showRecord(record) {
   document.getElementById("recordList").appendChild(li);
 }
 
-/* ========= 重新計算排行榜 ========= */
+/* ===== 重新計算排行榜（最穩） ===== */
 function recalculateScores() {
   scores = {};
   records.forEach(function () {
@@ -135,7 +136,7 @@ function recalculateScores() {
   });
 }
 
-/* ========= 更新排行榜 ========= */
+/* ===== 更新排行榜 ===== */
 function updateRank() {
   let list = document.getElementById("rankList");
   list.innerHTML = "";
@@ -145,18 +146,31 @@ function updateRank() {
     arr.push({ name, score: scores[name] });
   }
 
-  arr.sort(function (a, b) {
-    return b.score - a.score;
-  });
+  arr.sort((a, b) => b.score - a.score);
 
-  arr.slice(0, 10).forEach(function (item) {
+  arr.slice(0, 10).forEach(item => {
     let li = document.createElement("li");
     li.innerText = item.name + "：" + item.score + " 次";
     list.appendChild(li);
   });
 }
 
-/* ========= 房間功能 ========= */
+/* ===== 清除紀錄（已修好） ===== */
+function clearRecords() {
+  if (!confirm("確定要清除所有紀錄嗎？")) return;
+
+  records = [];
+  localStorage.removeItem("records");
+
+  document.getElementById("recordList").innerHTML = "";
+
+  recalculateScores();
+  updateRank();
+
+  alert("紀錄已清除！");
+}
+
+/* ===== 房間功能 ===== */
 function makeRoomCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
@@ -166,7 +180,6 @@ function createRoom() {
   localStorage.setItem("roomCode", code);
   document.getElementById("roomText").innerText =
     "你的房間代碼是：" + code;
-  alert("房間已建立！");
 }
 
 function joinRoom() {
@@ -178,29 +191,8 @@ function joinRoom() {
   localStorage.setItem("roomCode", code);
   document.getElementById("roomText").innerText =
     "你已加入房間：" + code;
-  alert("成功加入房間！");
 }
-function clearRecords() {
-
-  // 再確認一次，避免誤按
-  if (!confirm("確定要清除所有紀錄嗎？這個動作無法復原")) {
-    return;
-  }
-
-  // 清除紀錄資料
-  records = [];
-  localStorage.removeItem("records");
-
-  // 清除排行榜資料
-  localStorage.removeItem("scores");
-
-  // 清空畫面上的清單
-  document.getElementById("recordList").innerHTML = "";
-  document.getElementById("rankList").innerHTML = "";
-
-  alert("所有紀錄已清除！");
-}
-
+</script>
 
 </body>
 </html>
