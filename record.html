@@ -40,68 +40,7 @@
 <h2>我的紀錄</h2>
 <ul id="recordList"></ul>
 
-<script>
-/* ========= 讀取暱稱 ========= */
-let nickname = localStorage.getItem("nickname");
-document.getElementById("userName").innerText = nickname;
 
-
-/* ========= 讀取已存的紀錄 ========= */
-let records = JSON.parse(localStorage.getItem("records")) || [];
-
-// 一進頁面就顯示所有紀錄
-records.forEach(showRecord);
-
-
-/* ========= 新增紀錄 ========= */
-function addRecord() {// 如果排行榜裡還沒有這個人，先給 0 分
-if (!scores[userName]) {
-  scores[userName] = 0;
-}
-
-// 新增一筆紀錄，分數 +1
-scores[userName]++;
-
-// 存回 localStorage
-localStorage.setItem("scores", JSON.stringify(scores));
-
-// 更新排行榜畫面
-updateRank();
-
-
-  let time = document.getElementById("time").value;
-  let feel = document.getElementById("feel").value;
-  let note = document.getElementById("note").value;
-
-  // 把一筆資料變成一個物件
-  let record = {
-    time: time,
-    feel: feel,
-    note: note || "無"
-  };
-
-  // 加進陣列
-  records.push(record);
-
-  // 存進 localStorage
-  localStorage.setItem("records", JSON.stringify(records));
-
-  // 顯示在畫面
-  showRecord(record);
-}
-
-
-/* ========= 顯示單筆紀錄 ========= */
-function showRecord(record) {
-
-  let li = document.createElement("li");
-  li.innerText =
-    "時間：" + record.time +
-    "｜狀況：" + record.feel +
-    "｜備註：" + record.note;
-
-  document.getElementById("recordList").appendChild(li);
-}
  <script>
 /* ========= 使用者暱稱 ========= */
 let userName = localStorage.getItem("nickname");
