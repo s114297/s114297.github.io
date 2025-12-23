@@ -56,6 +56,22 @@ let records = JSON.parse(localStorage.getItem("records")) || [];
 
 /* ========= 排行榜 ========= */
 let scores = JSON.parse(localStorage.getItem("scores")) || {};
+/* ========= 修正排行榜（把舊紀錄補進去） ========= */
+
+// 如果排行榜是空的，但紀錄已經存在
+if (Object.keys(scores).length === 0 && records.length > 0) {
+
+  records.forEach(function () {
+    // 每一筆紀錄都算一次
+    if (!scores[nickname]) {
+      scores[nickname] = 0;
+    }
+    scores[nickname]++;
+  });
+
+  // 存回排行榜
+  localStorage.setItem("scores", JSON.stringify(scores));
+}
 
 /* ========= 頁面初始化 ========= */
 records.forEach(showRecord);
