@@ -3,59 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <title>紀錄頁</title>
-</head>
   <link rel="stylesheet" href="style.css">
-
+</head>
 <body>
 
 <h1>紀錄頁</h1>
-
 <p>你好，<span id="userName"></span> 👋</p>
 
-<hr>
+<div class="main-grid">
 
-<!-- 🏆 排行榜 -->
-<div class="section">
-  <h2>🏆 排行榜（前 10 名）</h2>
-  <ol id="rankList"></ol>
+  <!-- 🏆 排行榜 -->
+  <div class="section">
+    <h2>🏆 排行榜（前 10 名）</h2>
+    <ol id="rankList"></ol>
+  </div>
+
+  <!-- 📝 個人紀錄 -->
+  <div class="section">
+    <h2>個人紀錄區</h2>
+
+    <label>時間</label>
+    <input type="datetime-local" id="time">
+
+    <label>如廁狀況（左不舒服 → 右舒服）</label>
+    <input type="range" min="1" max="5" id="feel">
+
+    <label>備註（非必填）</label>
+    <input id="note">
+
+    <button onclick="addRecord()">新增資料</button>
+
+    <h3>我的紀錄</h3>
+    <ul id="recordList"></ul>
+  </div>
+
+  <!-- 👥 房間 -->
+  <div class="section">
+    <h2>和朋友一起玩</h2>
+
+    <button onclick="createRoom()">創建房間</button>
+    <p id="roomText">尚未加入房間</p>
+
+    <input id="roomInput" placeholder="輸入房間代碼">
+    <button onclick="joinRoom()">加入房間</button>
+  </div>
+
+  <!-- ❓ 常見問題 -->
+  <div class="section">
+    <h2>常見問題</h2>
+
+    <p><strong>便秘對身體的危害</strong></p>
+
+    <p>1.短期影響</p>
+    <p>・腹脹、不舒服</p>
+    <p>・排便用力，覺得痛或疲累</p>
+    <p>・食慾變差、注意力下降</p>
+
+    <p>2.長期影響</p>
+    <p>・腸道功能變差</p>
+    <p>・讓人煩躁或焦慮</p>
+    <p>・養成憋便壞習慣</p>
+  </div>
+
 </div>
-
-<hr>
-
-<div class="section">
-  <h2>個人紀錄區</h2>
-  <!-- 裡面的 input / button 全部不動 -->
-</div>
-
-
-<label>時間</label><br>
-<input type="datetime-local" id="time"><br><br>
-
-<label>如廁狀況（左不舒服 → 右舒服）</label><br>
-<input type="range" min="1" max="5" id="feel"><br><br>
-
-<label>備註（非必填）</label><br>
-<input id="note"><br><br>
-
-<button onclick="addRecord()">新增資料</button>
-
-<h3>我的紀錄</h3>
-<ul id="recordList"></ul>
-
-<hr>
-
-<!-- 👥 房間功能 -->
-<div class="section">
-  <h2>和朋友一起玩</h2>
-  <!-- 原本內容不動 -->
-</div>
-
-
-<button onclick="createRoom()">創建房間</button>
-<p id="roomText">尚未加入房間</p>
-
-<input id="roomInput" placeholder="輸入房間代碼">
-<button onclick="joinRoom()">加入房間</button>
 
 <script>
 /* ========= 使用者 ========= */
@@ -65,35 +75,20 @@ document.getElementById("userName").innerText = nickname;
 /* ========= 個人紀錄 ========= */
 let records = JSON.parse(localStorage.getItem("records")) || [];
 
-/* ========= 排行榜 ========= */
-let scores = JSON.parse(localStorage.getItem("scores")) || {};
-/* ========= 重新計算排行榜（以紀錄數量為準） ========= */
+/* ========= 排行榜（以紀錄數量計算，最穩） ========= */
+let scores = {};
 
-// 清空排行榜
-scores = {};
-
-// 用「已有的紀錄數量」來算分數
-records.forEach(function () {
-  if (!scores[nickname]) {
-    scores[nickname] = 0;
-  }
-  scores[nickname]++;
-});
-
-// 存回 localStorage
-localStorage.setItem("scores", JSON.stringify(scores));
-
-
-
-/* ========= 頁面初始化 ========= */
-records.forEach(showRecord);
-updateRank();
-
+/* ========= 房間 ========= */
 let savedRoom = localStorage.getItem("roomCode");
 if (savedRoom) {
   document.getElementById("roomText").innerText =
     "目前所在房間：" + savedRoom;
 }
+
+/* ========= 初始化畫面 ========= */
+records.forEach(showRecord);
+recalculateScores();
+updateRank();
 
 /* ========= 新增紀錄 ========= */
 function addRecord() {
@@ -106,22 +101,13 @@ function addRecord() {
     return;
   }
 
-  let record = {
-    time: time,
-    feel: feel,
-    note: note
-  };
-
+  let record = { time, feel, note };
   records.push(record);
+
   localStorage.setItem("records", JSON.stringify(records));
   showRecord(record);
 
-  // 排行榜加分
-  if (!scores[nickname]) {
-    scores[nickname] = 0;
-  }
-  scores[nickname]++;
-  localStorage.setItem("scores", JSON.stringify(scores));
+  recalculateScores();
   updateRank();
 
   alert("已新增紀錄！");
@@ -137,6 +123,17 @@ function showRecord(record) {
   document.getElementById("recordList").appendChild(li);
 }
 
+/* ========= 重新計算排行榜 ========= */
+function recalculateScores() {
+  scores = {};
+  records.forEach(function () {
+    if (!scores[nickname]) {
+      scores[nickname] = 0;
+    }
+    scores[nickname]++;
+  });
+}
+
 /* ========= 更新排行榜 ========= */
 function updateRank() {
   let list = document.getElementById("rankList");
@@ -144,14 +141,14 @@ function updateRank() {
 
   let arr = [];
   for (let name in scores) {
-    arr.push({ name: name, score: scores[name] });
+    arr.push({ name, score: scores[name] });
   }
 
-  arr.sort(function(a, b) {
+  arr.sort(function (a, b) {
     return b.score - a.score;
   });
 
-  arr.slice(0, 10).forEach(function(item) {
+  arr.slice(0, 10).forEach(function (item) {
     let li = document.createElement("li");
     li.innerText = item.name + "：" + item.score + " 次";
     list.appendChild(li);
@@ -183,25 +180,6 @@ function joinRoom() {
   alert("成功加入房間！");
 }
 </script>
-<hr>
-
-<div class="section">
-  <h2>常見問題</h2>
-  <!-- FAQ 文字不動 -->
-</div>
-
-
-<p><strong>便秘對身體的危害</strong></p>
-
-<p>1.短期影響</p>
-<p>・腹脹、不舒服</p>
-<p>・排便用力，覺得痛或疲累</p>
-<p>・食慾變差、注意力下降</p>
-
-<p>2.長期影響</p>
-<p>・腸道功能變差</p>
-<p>・讓人煩躁或焦慮</p>
-<p>・養成憋便壞習慣</p>
 
 </body>
 </html>
