@@ -32,6 +32,48 @@
 <!-- 顯示紀錄的地方 -->
 <h2>我的紀錄</h2>
 <ul id="recordList"></ul>
+<script>
+/* ===== 房間功能 ===== */
+
+// 產生英數混合代碼
+function makeRoomCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+// 創建房間
+function createRoom() {
+  let code = makeRoomCode();
+
+  // 存進瀏覽器
+  localStorage.setItem("roomCode", code);
+
+  // 顯示在畫面上
+  document.getElementById("roomText").innerText =
+    "你的房間代碼是：" + code;
+}
+
+// 加入房間
+function joinRoom() {
+  let code = document.getElementById("roomInput").value;
+
+  if (code === "") {
+    alert("請輸入房間代碼");
+    return;
+  }
+
+  localStorage.setItem("roomCode", code);
+
+  document.getElementById("roomText").innerText =
+    "你已加入房間：" + code;
+}
+
+// 重新整理後仍顯示房間
+let savedRoom = localStorage.getItem("roomCode");
+if (savedRoom) {
+  document.getElementById("roomText").innerText =
+    "目前所在房間：" + savedRoom;
+}
+</script>
 
 <script>
 /* ========= 讀取暱稱 ========= */
@@ -83,6 +125,17 @@ function showRecord(record) {
   document.getElementById("recordList").appendChild(li);
 }
 </script>
+<hr>
+
+<h2>和朋友一起玩</h2>
+
+<button onclick="createRoom()">創建房間</button>
+
+<p id="roomText">目前尚未加入房間</p>
+
+<input id="roomInput" placeholder="輸入房間代碼">
+
+<button onclick="joinRoom()">加入房間</button>
 
 
 </body>
