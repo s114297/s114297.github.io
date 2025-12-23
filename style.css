@@ -1,67 +1,76 @@
-/* 全站基本設定 */
+/* ===== 全站 ===== */
 body {
   font-family: "Microsoft JhengHei", Arial, sans-serif;
-  background-color: #f4f1ee;
+  background-color: #d8d2cb; /* 比之前深一點，但不暗 */
   margin: 0;
   padding: 20px;
   color: #333;
 }
 
-/* 標題 */
+/* 主標題 */
 h1 {
   text-align: center;
+  margin-bottom: 24px;
 }
 
-h2 {
-  margin-top: 0;
+/* ===== 版面格線 ===== */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 兩欄 */
+  gap: 20px;
 }
 
-/* 區塊卡片 */
+/* 手機自動變單欄 */
+@media (max-width: 768px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== 方塊卡片 ===== */
 .section {
   background-color: #ffffff;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
-/* 按鈕 */
-button {
-  background-color: #8b5e3c;
-  color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
+/* 區塊標題 */
+.section h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #e0d7ce;
+  padding-bottom: 6px;
 }
 
-button:hover {
-  background-color: #734a2f;
-}
-
-/* 輸入框 */
+/* ===== 表單元素 ===== */
 input {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
   width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
   box-sizing: border-box;
 }
 
-/* 清單 */
-ul, ol {
-  padding-left: 20px;
+input[type="range"] {
+  padding: 0;
 }
 
-/* 排行榜 */
-#rankList li {
-  margin-bottom: 6px;
-  font-weight: bold;
+/* ===== 按鈕 ===== */
+button {
+  background-color: #7a5230;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-right: 6px;
 }
 
-/* 房間文字 */
-#roomText {
-  margin-top: 10px;
-  font-weight: bold;
-  color: #5a3d2b;
+button:hover {
+  background-color: #5f3f25;
 }
+
+/* ===== 排行榜 ===== */
+#rankList l
