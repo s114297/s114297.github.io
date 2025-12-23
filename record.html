@@ -39,48 +39,6 @@
 <!-- 顯示紀錄的地方 -->
 <h2>我的紀錄</h2>
 <ul id="recordList"></ul>
-<script>
-/* ===== 房間功能 ===== */
-
-// 產生英數混合代碼
-function makeRoomCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
-
-// 創建房間
-function createRoom() {
-  let code = makeRoomCode();
-
-  // 存進瀏覽器
-  localStorage.setItem("roomCode", code);
-
-  // 顯示在畫面上
-  document.getElementById("roomText").innerText =
-    "你的房間代碼是：" + code;
-}
-
-// 加入房間
-function joinRoom() {
-  let code = document.getElementById("roomInput").value;
-
-  if (code === "") {
-    alert("請輸入房間代碼");
-    return;
-  }
-
-  localStorage.setItem("roomCode", code);
-
-  document.getElementById("roomText").innerText =
-    "你已加入房間：" + code;
-}
-
-// 重新整理後仍顯示房間
-let savedRoom = localStorage.getItem("roomCode");
-if (savedRoom) {
-  document.getElementById("roomText").innerText =
-    "目前所在房間：" + savedRoom;
-}
-</script>
 
 <script>
 /* ========= 讀取暱稱 ========= */
@@ -144,49 +102,94 @@ function showRecord(record) {
 
   document.getElementById("recordList").appendChild(li);
 }
-  <script>
-/* ========= 排行榜資料 ========= */
+ <script>
+/* ========= 使用者暱稱 ========= */
+let userName = localStorage.getItem("nickname");
+document.getElementById("userName").innerText = userName;
 
-// 從 localStorage 讀取排行榜資料
+/* ========= 個人紀錄資料 ========= */
+let records = JSON.parse(localStorage.getItem("records")) || [];
+
+/* ========= 排行榜資料 ========= */
 let scores = JSON.parse(localStorage.getItem("scores")) || {};
 
-// 使用者暱稱
-let userName = localStorage.getItem("nickname");
-
-// 顯示排行榜
+/* ========= 頁面一進來就顯示 ========= */
+records.forEach(showRecord);
 updateRank();
+
+/* ========= 新增紀錄 ========= */
+function addRecord() {
+
+  let time = document.getElementById("time").value;
+  let feel = document.getElementById("feel").value;
+  let note = document.getElementById("note").value || "無";
+
+  if (time === "") {
+    alert("請選擇時間");
+    return;
+  }
+
+  // 建立一筆紀錄
+  let record = {
+    time: time,
+    feel: feel,
+    note: note
+  };
+
+  // 存紀錄
+  records.push(record);
+  localStorage.setItem("records", JSON.stringify(records));
+
+  // 顯示紀錄
+  showRecord(record);
+
+  // ===== 排行榜處理 =====
+  if (!scores[userName]) {
+    scores[userName] = 0;
+  }
+
+  scores[userName]++;
+  localStorage.setItem("scores", JSON.stringify(scores));
+  updateRank();
+}
+
+/* ========= 顯示單筆紀錄 ========= */
+function showRecord(record) {
+  let li = document.createElement("li");
+  li.innerText =
+    "時間：" + record.time +
+    "｜狀況：" + record.feel +
+    "｜備註：" + record.note;
+
+  document.getElementById("recordList").appendChild(li);
+}
 
 /* ========= 更新排行榜 ========= */
 function updateRank() {
-
   let list = document.getElementById("rankList");
   list.innerHTML = "";
 
-  // 把物件轉成陣列，方便排序
-  let scoreArray = [];
+  let arr = [];
 
   for (let name in scores) {
-    scoreArray.push({
+    arr.push({
       name: name,
       score: scores[name]
     });
   }
 
-  // 依分數由高到低排序
-  scoreArray.sort(function(a, b) {
+  arr.sort(function(a, b) {
     return b.score - a.score;
   });
 
-  // 只顯示前 10 名
-  scoreArray.slice(0, 10).forEach(function(item) {
+  arr.slice(0, 10).forEach(function(item) {
     let li = document.createElement("li");
-    li.innerText = item.name + " ： " + item.score + " 次";
+    li.innerText = item.name + "：" + item.score + " 次";
     list.appendChild(li);
   });
 }
 </script>
 
-</script>
 <hr>
 
 <h2>和朋友一起玩</h2>
