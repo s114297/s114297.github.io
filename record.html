@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>紀錄頁</title>
 </head>
+  <link rel="stylesheet" href="style.css">
+
 <body>
 
 <h1>紀錄頁</h1>
@@ -13,13 +15,18 @@
 <hr>
 
 <!-- 🏆 排行榜 -->
-<h2>🏆 排行榜（前 10 名）</h2>
-<ol id="rankList"></ol>
+<div class="section">
+  <h2>🏆 排行榜（前 10 名）</h2>
+  <ol id="rankList"></ol>
+</div>
 
 <hr>
 
-<!-- 📝 個人紀錄區 -->
-<h2>個人紀錄區</h2>
+<div class="section">
+  <h2>個人紀錄區</h2>
+  <!-- 裡面的 input / button 全部不動 -->
+</div>
+
 
 <label>時間</label><br>
 <input type="datetime-local" id="time"><br><br>
@@ -38,7 +45,11 @@
 <hr>
 
 <!-- 👥 房間功能 -->
-<h2>和朋友一起玩</h2>
+<div class="section">
+  <h2>和朋友一起玩</h2>
+  <!-- 原本內容不動 -->
+</div>
+
 
 <button onclick="createRoom()">創建房間</button>
 <p id="roomText">尚未加入房間</p>
@@ -174,7 +185,11 @@ function joinRoom() {
 </script>
 <hr>
 
-<h2>常見問題</h2>
+<div class="section">
+  <h2>常見問題</h2>
+  <!-- FAQ 文字不動 -->
+</div>
+
 
 <p><strong>便秘對身體的危害</strong></p>
 
