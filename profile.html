@@ -1,46 +1,111 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<title>個人資料</title>
-<style>
-body {
-  background:#c7b299;
-  font-family: Arial;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.card {
-  background:#f5f0ea;
-  padding:30px;
-  border-radius:12px;
-  width:300px;
-}
-input,button {
-  width:100%;
-  padding:8px;
-  margin-top:10px;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>個人資料</title>
+
+  <!-- 字體（接近 Canva 可畫樂黑的黑體風格） -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #c9b6a3; /* 淡咖啡背景 */
+      font-family: "Noto Sans TC", sans-serif;
+    }
+
+    .box {
+      background: white;
+      width: 360px;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #777;
+      text-align: left;
+      margin-top: 4px;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      background-color: #8b6f47;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #725a38;
+    }
+  </style>
 </head>
 <body>
 
-<div class="card">
-  <h2>建立帳號</h2>
-  <input id="account" placeholder="帳號">
-  <input id="nickname" placeholder="暱稱">
-  <button onclick="save()">確認</button>
-</div>
+  <div class="box">
+    <h1>個人資料</h1>
 
-<script>
-function save(){
-  localStorage.setItem("account", account.value);
-  localStorage.setItem("nickname", nickname.value);
-  location.href="record.html";
-}
-</script>
+    <label for="account">帳號</label>
+    <input id="account" placeholder="請輸入帳號">
+    <div class="hint">※ 請使用英數混合</div>
+
+    <label for="nickname">暱稱</label>
+    <input id="nickname" placeholder="請輸入暱稱">
+
+    <button onclick="saveProfile()">確認</button>
+  </div>
+
+  <script>
+    function saveProfile() {
+      const account = document.getElementById("account").value.trim();
+      const nickname = document.getElementById("nickname").value.trim();
+
+      if (account === "" || nickname === "") {
+        alert("請填寫帳號與暱稱");
+        return;
+      }
+
+      localStorage.setItem("account", account);
+      localStorage.setItem("nickname", nickname);
+
+      window.location.href = "record.html";
+    }
+  </script>
 
 </body>
 </html>
+
