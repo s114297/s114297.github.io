@@ -1,29 +1,37 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <title>屎王筆記本</title>
+<meta charset="UTF-8">
+<title>便便筆記</title>
+<style>
+body {
+  background:#c7b299;
+  font-family: Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.card {
+  background:#f5f0ea;
+  padding:30px;
+  border-radius:12px;
+  width:300px;
+  text-align:center;
+}
+button {
+  padding:10px 20px;
+  margin-top:20px;
+}
+</style>
 </head>
 <body>
 
-<h1>歡迎使用「屎王筆記本」</h1>
-
-<p>你今天拉屎了嗎？</p>
-<p>
-  使用此網站可以記錄個人，<br>
-  或與朋友一起來比賽，<br>
-  誰才是真正的贏家—屎王！
-</p>
-
-<button onclick="goProfile()">START!</button>
-
-<script>
-function goProfile() {
-  // 這一行的意思是：前往 profile.html
-  window.location.href = "profile.html";
-}
-</script>
+<div class="card">
+  <h1>便便筆記</h1>
+  <p>記錄你的如廁狀況<br>也可以和朋友一起比</p>
+  <button onclick="location.href='profile.html'">開始</button>
+</div>
 
 </body>
 </html>
-
