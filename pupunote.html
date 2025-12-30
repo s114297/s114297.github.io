@@ -4,78 +4,91 @@
   <meta charset="UTF-8">
   <title>屎王筆記本</title>
 
+  <!-- 使用接近 Canva 可画乐黑的字體 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+
   <style>
-    /* 整個畫面背景 */
     body {
       margin: 0;
-      padding: 0;
       height: 100vh;
-      background-color: #c9b79c; /* 不會太深的咖啡色 */
+      background-color: #8B6F5A; /* 深一點但不會太深的背景 */
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: "Microsoft JhengHei", sans-serif;
+      font-family: 'Noto Sans TC', sans-serif;
     }
 
-    /* 白色主框（佔畫面一半以上） */
-    .container {
-      background-color: #ffffff;
-      width: 65%;
-      max-width: 900px;
+    .box {
+      background-color: white;
+      width: 60%;
       min-height: 60%;
-      padding: 60px 40px;
-      border-radius: 25px;
+      border-radius: 20px;
+      padding: 40px;
       text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     h1 {
       font-size: 48px;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
+      font-weight: 900;
+    }
+
+    h2 {
+      font-size: 32px;
+      margin: 30px 0 20px 0;
+      font-weight: 700;
     }
 
     p {
       font-size: 20px;
-      line-height: 1.8;
-      margin-bottom: 20px;
+      line-height: 1.6;
+      margin: 10px 0;
     }
 
     button {
       margin-top: 40px;
       padding: 15px 40px;
       font-size: 22px;
+      font-weight: 700;
       border: none;
       border-radius: 30px;
-      background-color: #8b6f47;
+      background-color: #5A3E2B;
       color: white;
       cursor: pointer;
     }
 
     button:hover {
-      background-color: #755c3a;
+      background-color: #3E2A1D;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>你今天 拉屎了嗎？</h1>
+  <div class="box">
+    <!-- 上方標題 -->
+    <h1>屎王筆記本</h1>
+
+    <!-- 主內容 -->
+    <h2>你今天 拉屎了嗎？</h2>
 
     <p>
       使用此網站可以記錄個人，<br>
       或與朋友一起來比賽誰才是真正的贏家—屎王！
     </p>
 
-    <p>
-      點擊以下按鈕開始記錄吧！
-    </p>
+    <p>點擊以下按鈕開始記錄吧！</p>
 
-    <button onclick="goProfile()">開始記錄</button>
+    <!-- 開始按鈕 -->
+    <button onclick="goNext()">START!</button>
   </div>
 
   <script>
-    function goProfile() {
+    function goNext() {
       window.location.href = "profile.html";
     }
   </script>
