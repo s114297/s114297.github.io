@@ -3,169 +3,122 @@
 <head>
   <meta charset="UTF-8">
   <title>紀錄頁</title>
-  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: #c9b29b;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .box {
+      background: #fffaf3;
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      font-size: 16px;
+    }
+
+    button {
+      background: #8b5e3c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>紀錄頁</h1>
-<p>你好，<span id="userName"></span> 👋</p>
+<div class="container">
 
-<div class="main-grid">
-
-  <!-- 排行榜 -->
-  <div class="section">
-    <h2>🏆 排行榜</h2>
-    <ol id="rankList"></ol>
-  </div>
-
-  <!-- 個人紀錄 -->
-  <div class="section">
-    <h2>個人紀錄區</h2>
-
-    <label>時間</label>
-    <input type="datetime-local" id="time" max="">
-
-    <label>如廁狀況（不順暢 → 順暢）</label>
-    <input type="range" min="1" max="5" id="feel" value="3">
-
-    <label>備註（非必填）</label>
-    <input id="note">
-
-    <button id="addBtn">新增資料</button>
-    <button id="clearBtn">清除所有紀錄</button>
-
-    <h3>我的紀錄</h3>
-    <ul id="recordList"></ul>
+  <!-- 排行榜（假的） -->
+  <div class="box">
+    <h2>排行榜（前十名）</h2>
+    <ol>
+      <li>屎王寶座我拿定了 - 12 次</li>
+      <li>每次跑步都靠氮氣加速 - 10 次</li>
+      <li>我才是屎王 - 9 次</li>
+      <li>你 - <span id="myCount">0</span> 次</li>
+    </ol>
   </div>
 
   <!-- 房間 -->
-  <div class="section">
+  <div class="box">
     <h2>和朋友一起玩</h2>
+    <button onclick="createRoom()">創建房間</button>
+    <p id="roomCode"></p>
 
-    <button id="createRoomBtn">創建房間</button>
-    <p id="roomText">尚未加入房間</p>
+    <input id="joinCode" placeholder="輸入房間代碼">
+    <button onclick="joinRoom()">加入房間</button>
+  </div>
 
-    <input id="roomInput" placeholder="輸入房間代碼">
-    <button id="joinRoomBtn">加入房間</button>
+  <!-- 新增紀錄 -->
+  <div class="box">
+    <h2>新增紀錄</h2>
+
+    <input type="datetime-local" id="time">
+
+    <input type="range" min="1" max="5" id="feel">
+
+    <input id="note" placeholder="備註（非必填）">
+
+    <button onclick="add()">新增資料</button>
   </div>
 
   <!-- 常見問題 -->
-  <div class="section">
+  <div class="box">
     <h2>常見問題</h2>
-
-    <p><strong>便秘對身體的危害</strong></p>
-
+    <p>便秘對身體的危害</p>
     <p>1.短期影響</p>
-    <p>・腹脹、不舒服</p>
-    <p>・排便用力，覺得痛或疲累</p>
-    <p>・食慾變差、注意力下降</p>
-
+    <p>• 腹脹、不舒服</p>
+    <p>• 排便用力，覺得痛或疲累</p>
+    <p>• 食慾變差、注意力下降</p>
     <p>2.長期影響</p>
-    <p>・腸道功能變差</p>
-    <p>・讓人煩躁或焦慮</p>
-    <p>・養成憋便壞習慣</p>
+    <p>• 腸道功能變差</p>
+    <p>• 讓人煩躁或焦慮</p>
+    <p>• 養成憋便壞習慣</p>
   </div>
 
 </div>
 
 <script>
-/* ===== 使用者 ===== */
-const nickname = localStorage.getItem("nickname") || "訪客";
-document.getElementById("userName").innerText = nickname;
+let count = 0;
 
-/* ===== 限制時間不能超過現在 ===== */
-const now = new Date();
-const localNow = new Date(
-  now.getTime() - now.getTimezoneOffset() * 60000
-).toISOString().slice(0, 16);
-document.getElementById("time").max = localNow;
-
-/* ===== 資料 ===== */
-let records = JSON.parse(localStorage.getItem("records")) || [];
-
-/* ===== DOM ===== */
-const recordList = document.getElementById("recordList");
-const rankList = document.getElementById("rankList");
-
-/* ===== 顯示紀錄 ===== */
-function renderRecords() {
-  recordList.innerHTML = "";
-  records.forEach(r => {
-    const li = document.createElement("li");
-    li.textContent =
-      `時間：${r.time}｜狀況：${r.feel}｜備註：${r.note}`;
-    recordList.appendChild(li);
-  });
+function add() {
+  count++;
+  document.getElementById("myCount").innerText = count;
+  alert("紀錄成功！");
 }
 
-/* ===== 排行榜（依紀錄數） ===== */
-function renderRank() {
-  rankList.innerHTML = "";
-  const li = document.createElement("li");
-  li.textContent = `${nickname}：${records.length} 次`;
-  rankList.appendChild(li);
+function createRoom() {
+  let code = Math.random().toString(36).substring(2,8).toUpperCase();
+  document.getElementById("roomCode").innerText = "房間代碼：" + code;
 }
 
-/* ===== 新增紀錄 ===== */
-document.getElementById("addBtn").addEventListener("click", () => {
-  const time = document.getElementById("time").value;
-  const feel = document.getElementById("feel").value;
-  const note = document.getElementById("note").value || "無";
-
-  if (!time) {
-    alert("請選擇時間");
-    return;
-  }
-
-  records.push({ time, feel, note });
-  localStorage.setItem("records", JSON.stringify(records));
-
-  renderRecords();
-  renderRank();
-
-  // 新增後回復預設狀態
-  document.getElementById("time").value = "";
-  document.getElementById("feel").value = 3;
-  document.getElementById("note").value = "";
-});
-
-/* ===== 清除紀錄 ===== */
-document.getElementById("clearBtn").addEventListener("click", () => {
-  if (!confirm("確定要清除所有紀錄嗎？")) return;
-
-  records = [];
-  localStorage.removeItem("records");
-
-  renderRecords();
-  renderRank();
-});
-
-/* ===== 房間功能 ===== */
-function makeRoomCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
+function joinRoom() {
+  alert("已加入房間：" + joinCode.value);
 }
-
-document.getElementById("createRoomBtn").addEventListener("click", () => {
-  const code = makeRoomCode();
-  localStorage.setItem("roomCode", code);
-  document.getElementById("roomText").textContent =
-    "你的房間代碼是：" + code;
-});
-
-document.getElementById("joinRoomBtn").addEventListener("click", () => {
-  const code = document.getElementById("roomInput").value;
-  if (!code) {
-    alert("請輸入房間代碼");
-    return;
-  }
-  localStorage.setItem("roomCode", code);
-  document.getElementById("roomText").textContent =
-    "你已加入房間：" + code;
-});
-
-/* ===== 初始化 ===== */
-renderRecords();
-renderRank();
 </script>
 
 </body>
