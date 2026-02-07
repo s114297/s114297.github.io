@@ -8,7 +8,7 @@
 body{
   margin:0;
   font-family: "Arial", sans-serif;
-  background:#d8cfc4; /* 不太深的背景 */
+  background:#d8cfc4;
 }
 
 h1{
@@ -124,7 +124,13 @@ const nickname = localStorage.getItem("nickname") || "匿名";
 document.getElementById("userName").innerText = nickname;
 
 // =======================
-// 假排行榜資料（固定）
+// 時間限制：不能選未來
+// =======================
+const timeInput = document.getElementById("time");
+timeInput.max = new Date().toISOString().slice(0,16);
+
+// =======================
+// 假排行榜（固定）
 // =======================
 let rankData = [
   {name:"我是屎王哈哈哈哈哈", count:12},
@@ -135,71 +141,87 @@ let rankData = [
   {name:"黃LUCAS", count:7}
 ];
 
-// 自己的次數
-let myCount = 0;
+// =======================
+// 從 localStorage 讀資料
+// =======================
+let myCount = Number(localStorage.getItem("myCount")) || 0;
+let records = JSON.parse(localStorage.getItem("records")) || [];
 
 // =======================
 // 顯示排行榜
 // =======================
 function updateRank(){
-  let list = document.getElementById("rankList");
+  const list = document.getElementById("rankList");
   list.innerHTML = "";
 
-  // 把自己加入排行榜資料
-  let allData = [...rankData, {name:nickname, count:myCount}];
-
-  // 排序
+  const allData = [...rankData, {name:nickname, count:myCount}];
   allData.sort((a,b)=>b.count - a.count);
 
-  // 顯示前 10
-  allData.slice(0,10).forEach(item=>{
-    let li = document.createElement("li");
+  allData.forEach(item=>{
+    const li = document.createElement("li");
     li.innerText = `${item.name} - ${item.count} 次`;
     list.appendChild(li);
   });
 }
 
-// 初始顯示
-updateRank();
+// =======================
+// 顯示紀錄
+// =======================
+function renderRecords(){
+  const list = document.getElementById("recordList");
+  list.innerHTML = "";
+  records.forEach(r=>{
+    const li = document.createElement("li");
+    li.innerText = `時間：${r.time}｜狀況：${r.feel}｜備註：${r.note}`;
+    list.appendChild(li);
+  });
+}
 
 // =======================
 // 新增紀錄
 // =======================
 function addRecord(){
-  let time = document.getElementById("time").value;
-  let feel = document.getElementById("feel").value;
-  let note = document.getElementById("note").value || "無";
+  const time = timeInput.value;
+  const feel = document.getElementById("feel").value;
+  const note = document.getElementById("note").value || "無";
 
   if(time === ""){
     alert("請選擇時間");
     return;
   }
 
-  let li = document.createElement("li");
-  li.innerText = `時間：${time}｜狀況：${feel}｜備註：${note}`;
-  document.getElementById("recordList").appendChild(li);
+  // ❗ 擋未來時間
+  if(new Date(time) > new Date()){
+    alert("不能選擇未來時間");
+    return;
+  }
 
-  // 次數 +1
+  records.push({time, feel, note});
+  localStorage.setItem("records", JSON.stringify(records));
+
   myCount++;
+  localStorage.setItem("myCount", myCount);
+
+  renderRecords();
   updateRank();
 
-  // 清空欄位
-  document.getElementById("time").value = "";
+  // 清空
+  timeInput.value = "";
   document.getElementById("feel").value = 3;
   document.getElementById("note").value = "";
 }
 
 // =======================
-// 房間功能
+// 房間功能（不動）
 // =======================
 function createRoom(){
-  let code = Math.random().toString(36).substring(2,8).toUpperCase();
+  const code = Math.random().toString(36).substring(2,8).toUpperCase();
   localStorage.setItem("roomCode", code);
   document.getElementById("roomCode").innerText = "房間代碼：" + code;
 }
 
 function joinRoom(){
-  let code = document.getElementById("joinRoomInput").value;
+  const code = document.getElementById("joinRoomInput").value;
   if(code===""){
     alert("請輸入房間代碼");
     return;
@@ -207,6 +229,12 @@ function joinRoom(){
   localStorage.setItem("roomCode", code);
   alert("已加入房間：" + code);
 }
+
+// =======================
+// 初始載入
+// =======================
+renderRecords();
+updateRank();
 </script>
 
 </body>
