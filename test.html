@@ -2,12 +2,12 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>屎王筆記本｜紀錄頁</title>
+<title>紀錄頁</title>
 
 <style>
 body{
   margin:0;
-  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  font-family: "Arial", sans-serif;
   background:#d8cfc4;
 }
 
@@ -25,8 +25,8 @@ h1{
 
 .card{
   background:#f5efe9;
-  padding:16px;
-  border-radius:14px;
+  padding:15px;
+  border-radius:12px;
 }
 
 .card h2{
@@ -40,7 +40,6 @@ input, button{
   margin:6px 0;
   border-radius:6px;
   border:1px solid #aaa;
-  font-family: inherit;
 }
 
 button{
@@ -62,8 +61,8 @@ ul{
 
 <body>
 
-<h1>屎王筆記本</h1>
-<p style="text-align:center;">目前使用者：<b id="userName"></b></p>
+<h1>紀錄頁</h1>
+<p style="text-align:center;">你好，<b id="userName"></b></p>
 
 <div class="container">
 
@@ -73,7 +72,7 @@ ul{
   <ul id="rankList"></ul>
 </div>
 
-<!-- 房間 -->
+<!-- 和朋友一起玩 -->
 <div class="card">
   <h2>👥 和朋友一起玩</h2>
   <button onclick="createRoom()">創建房間</button>
@@ -87,7 +86,7 @@ ul{
 <div class="card">
   <h2>📝 個人紀錄</h2>
 
-  <label>時間（只能選現在以前）</label>
+  <label>時間</label>
   <input type="datetime-local" id="time">
 
   <label>如廁狀況（不順暢 → 順暢）</label>
@@ -113,3 +112,130 @@ ul{
   <p>• 腸道功能變差</p>
   <p>• 讓人煩躁或焦慮</p>
   <p>• 養成憋便壞習慣</p>
+</div>
+
+</div>
+
+<script>
+// =======================
+// 使用者資料
+// =======================
+const nickname = localStorage.getItem("nickname") || "匿名";
+document.getElementById("userName").innerText = nickname;
+
+// =======================
+// 時間限制：不能選未來
+// =======================
+const timeInput = document.getElementById("time");
+timeInput.max = new Date().toISOString().slice(0,16);
+
+// =======================
+// 假排行榜（固定）
+// =======================
+let rankData = [
+  {name:"我是屎王哈哈哈哈哈", count:12},
+  {name:"林chloe", count:11},
+  {name:"我才是屎王", count:10},
+  {name:"李弘毅級棒大金", count:9},
+  {name:"王ADEN", count:8},
+  {name:"黃LUCAS", count:7}
+];
+
+// =======================
+// 從 localStorage 讀資料
+// =======================
+let myCount = Number(localStorage.getItem("myCount")) || 0;
+let records = JSON.parse(localStorage.getItem("records")) || [];
+
+// =======================
+// 顯示排行榜
+// =======================
+function updateRank(){
+  const list = document.getElementById("rankList");
+  list.innerHTML = "";
+
+  const allData = [...rankData, {name:nickname, count:myCount}];
+  allData.sort((a,b)=>b.count - a.count);
+
+  allData.forEach(item=>{
+    const li = document.createElement("li");
+    li.innerText = `${item.name} - ${item.count} 次`;
+    list.appendChild(li);
+  });
+}
+
+// =======================
+// 顯示紀錄
+// =======================
+function renderRecords(){
+  const list = document.getElementById("recordList");
+  list.innerHTML = "";
+  records.forEach(r=>{
+    const li = document.createElement("li");
+    li.innerText = `時間：${r.time}｜狀況：${r.feel}｜備註：${r.note}`;
+    list.appendChild(li);
+  });
+}
+
+// =======================
+// 新增紀錄
+// =======================
+function addRecord(){
+  const time = timeInput.value;
+  const feel = document.getElementById("feel").value;
+  const note = document.getElementById("note").value || "無";
+
+  if(time === ""){
+    alert("請選擇時間");
+    return;
+  }
+
+  // ❗ 擋未來時間
+  if(new Date(time) > new Date()){
+    alert("不能選擇未來時間");
+    return;
+  }
+
+  records.push({time, feel, note});
+  localStorage.setItem("records", JSON.stringify(records));
+
+  myCount++;
+  localStorage.setItem("myCount", myCount);
+
+  renderRecords();
+  updateRank();
+
+  // 清空
+  timeInput.value = "";
+  document.getElementById("feel").value = 3;
+  document.getElementById("note").value = "";
+}
+
+// =======================
+// 房間功能（不動）
+// =======================
+function createRoom(){
+  const code = Math.random().toString(36).substring(2,8).toUpperCase();
+  localStorage.setItem("roomCode", code);
+  document.getElementById("roomCode").innerText = "房間代碼：" + code;
+}
+
+function joinRoom(){
+  const code = document.getElementById("joinRoomInput").value;
+  if(code===""){
+    alert("請輸入房間代碼");
+    return;
+  }
+  localStorage.setItem("roomCode", code);
+  alert("已加入房間：" + code);
+}
+
+// =======================
+// 初始載入
+// =======================
+renderRecords();
+updateRank();
+</script>
+
+</body>
+</html>
