@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>屎王筆記本｜紀錄頁</title>
+
+<style>
+body{
+  margin:0;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  background:#d8cfc4;
+}
+
+h1{
+  text-align:center;
+  margin:20px 0;
+}
+
+.container{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:20px;
+  padding:20px;
+}
+
+.card{
+  background:#f5efe9;
+  padding:16px;
+  border-radius:14px;
+}
+
+.card h2{
+  margin-top:0;
+  text-align:center;
+}
+
+input, button{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:6px;
+  border:1px solid #aaa;
+  font-family: inherit;
+}
+
+button{
+  background:#8b6f4e;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#725a3e;
+}
+
+ul{
+  padding-left:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>屎王筆記本</h1>
+<p style="text-align:center;">目前使用者：<b id="userName"></b></p>
+
+<div class="container">
+
+<!-- 排行榜 -->
+<div class="card">
+  <h2>🏆 排行榜</h2>
+  <ul id="rankList"></ul>
+</div>
+
+<!-- 房間 -->
+<div class="card">
+  <h2>👥 和朋友一起玩</h2>
+  <button onclick="createRoom()">創建房間</button>
+  <p id="roomCode"></p>
+
+  <input id="joinRoomInput" placeholder="輸入房間代碼">
+  <button onclick="joinRoom()">加入房間</button>
+</div>
+
+<!-- 個人紀錄 -->
+<div class="card">
+  <h2>📝 個人紀錄</h2>
+
+  <label>時間（只能選現在以前）</label>
+  <input type="datetime-local" id="time">
+
+  <label>如廁狀況（不順暢 → 順暢）</label>
+  <input type="range" min="1" max="5" id="feel">
+
+  <label>備註（非必填）</label>
+  <input id="note">
+
+  <button onclick="addRecord()">新增資料</button>
+
+  <ul id="recordList"></ul>
+</div>
+
+<!-- 常見問題 -->
+<div class="card">
+  <h2>❓ 常見問題</h2>
+  <p>便秘對身體的危害</p>
+  <p>1.短期影響</p>
+  <p>• 腹脹、不舒服</p>
+  <p>• 排便用力，覺得痛或疲累</p>
+  <p>• 食慾變差、注意力下降</p>
+  <p>2.長期影響</p>
+  <p>• 腸道功能變差</p>
+  <p>• 讓人煩躁或焦慮</p>
+  <p>• 養成憋便壞習慣</p>
